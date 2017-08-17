@@ -1,7 +1,7 @@
 defmodule OT.Server.Impl do
-  # @moduledoc """
-  # Implements the business logic of interacting with data in an OT system.
-  # """
+  @moduledoc """
+  Implements the business logic of interacting with data in an OT system.
+  """
 
   @adapter Application.get_env(:ot_server, :adapter, OT.Server.ETSAdapter)
   @max_retries Application.get_env(:ot_server, :max_retries)
