@@ -4,10 +4,14 @@
 operations in an operational transformation system. It ships with an adapter
 for persisting data to ETS, but implementing new adapters is simple.
 
+For more detailed information about operational transformation, see the
+documentation for [ot_ex](https://github.com/jclem/ot_ex) and the various links
+therein.
+
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `ot_server` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `ot_server` to your list of dependencies
+in `mix.exs`:
 
 ```elixir
 def deps do
