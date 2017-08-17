@@ -1,4 +1,4 @@
-# [OT.Server](https://hexdocs.pm/ot_server)
+# [OT.Server](https://hexdocs.pm/ot_server) [![Build Status](https://travis-ci.org/jclem/ot_server.svg?branch=master)](https://travis-ci.org/jclem/ot_server)
 
 `OT.Server` is an application that manages the correct handling of submitted
 operations in an operational transformation system. It ships with an adapter
