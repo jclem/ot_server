@@ -10,7 +10,7 @@ defmodule OT.Server.ETSAdapterTest do
   end
 
   test ".transact calls the enclosing function" do
-    result = ETSAdapter.transact(fn -> :done end)
+    result = ETSAdapter.transact("id", fn -> :done end)
     assert result == {:ok, :done}
   end
 
@@ -62,16 +62,11 @@ defmodule OT.Server.ETSAdapterTest do
   end
 
   test ".update_datum updates the datum" do
-    datum = %{id: "id", content: "A"}
+    datum = %{id: "id", content: "A", version: 0}
     :ets.insert(:ot_data, {datum[:id], datum})
-    {:ok, %{id: "id", content: "B"}} =
+    {:ok, %{id: "id", content: "B", version: 1}} =
       ETSAdapter.update_datum(datum, "B")
-    assert ETSAdapter.get_datum("id") == {:ok, %{id: "id", content: "B"}}
-  end
-
-  # This is not normally a requirement of adapters.
-  test ".update_datum creates the datum if it does not exist" do
-    assert {:ok, %{id: "id", content: "B"}} =
-      ETSAdapter.update_datum(%{id: "id", content: "A"}, "B")
+    assert ETSAdapter.get_datum("id") ==
+      {:ok, %{id: "id", content: "B", version: 1}}
   end
 end

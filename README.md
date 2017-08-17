@@ -1,4 +1,4 @@
-# OT.Server
+# [OT.Server](https://hexdocs.pm/ot_server)
 
 `OT.Server` is an application that manages the correct handling of submitted
 operations in an operational transformation system. It ships with an adapter
@@ -17,6 +17,28 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/ot_server](https://hexdocs.pm/ot_server).
+## Usage
+
+Implement an adapter as per `OT.Server.Adapter` and configure it as the adapter
+for the `:ot_server` application:
+
+```elixir
+config :ot_server,
+  adapter: MyOTAdapter,
+  max_retries: 25,
+  ot_types: %{"text" => OT.Text},
+  pool_size: 5
+```
+
+For an example of how an adapter can be created, see `OT.Server.ETSAdapter`.
+
+### Configuration Options
+
+- `adapter`: The `OT.Server.Adapter` that `OT.Server` will use to interact with
+  your data.
+- `max_retries`: The number of times a submission will be attempted before it
+  fails permanently.
+- `ot_types`: A map with string keys pointing to modules that implement
+  `OT.Type`.
+- `pool_size`: The number of workers to spawn. Each worker processes only a
+  single operation at a time, so set this accordingly.

@@ -1,7 +1,7 @@
 defmodule OT.Server.Mixfile do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.2.0"
   @github_url "https://github.com/jclem/ot_server"
 
   def project do
@@ -57,6 +57,7 @@ defmodule OT.Server.Mixfile do
 
   defp docs do
     [source_ref: "v#{@version}",
+     main: "README.md",
      extras: ["README.md": [filename: "README.md", title: "Readme"],
               "LICENSE.md": [filename: "LICENSE.md", title: "License"]]]
   end

@@ -1,7 +1,12 @@
 defmodule OT.Server.ETSAdapter do
   @moduledoc """
-  This is an OT server
+  This is an adapter for OT.Server that stores data and operations in ETS
+  tables.
+
+  It is not meant for production use, as all of its data is publicly available
+  for testing purposes.
   """
+
   @behaviour OT.Server.Adapter
 
   use GenServer
@@ -17,6 +22,7 @@ defmodule OT.Server.ETSAdapter do
     end
   end
 
+  @doc false
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
@@ -29,7 +35,7 @@ defmodule OT.Server.ETSAdapter do
   end
 
   @impl OT.Server.Adapter
-  def transact(func) do
+  def transact(_, func) do
     GenServer.call(__MODULE__, {:transact, func})
   end
 
@@ -83,7 +89,11 @@ defmodule OT.Server.ETSAdapter do
 
   @impl OT.Server.Adapter
   def update_datum(datum, content) do
-    datum = Map.put(datum, :content, content)
+    datum =
+      datum
+      |> Map.put(:content, content)
+      |> Map.put(:version, datum[:version] + 1)
+
     if :ets.insert(@data_table, {datum[:id], datum}) do
       {:ok, datum}
     else

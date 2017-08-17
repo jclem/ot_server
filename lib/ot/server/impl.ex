@@ -1,22 +1,27 @@
 defmodule OT.Server.Impl do
-  @moduledoc """
-  Implements the logic of accepting, transforming, and persisting OT operations.
-  """
+  # @moduledoc """
+  # Implements the business logic of interacting with data in an OT system.
+  # """
 
   @adapter Application.get_env(:ot_server, :adapter, OT.Server.ETSAdapter)
   @max_retries Application.get_env(:ot_server, :max_retries)
 
   @doc """
-  Get a datum.
+  Get a datum using the configured `OT.Server.Adapter`.
   """
+  @spec get_datum(OT.Server.datum_id) ::
+    {:ok, OT.Server.datum} | {:error, any}
   def get_datum(id) do
     @adapter.get_datum(id)
   end
 
   @doc """
-  Submit an operation, transforming it against concurrent operations, if
-  necessary.
+  Submit an operation using the configured `OT.Server.Adapter`, transforming it
+  against concurrent operations, if necessary.
   """
+  @spec submit_operation(OT.Server.datum_id,
+    OT.Server.operation_info, any, non_neg_integer) ::
+    {:ok, OT.Server.operation} | {:error, any}
   def submit_operation(datum_id, op_vsn, op_meta, retries \\ 0)
 
   def submit_operation(_, _, _, retries) when retries > @max_retries do
@@ -25,7 +30,7 @@ defmodule OT.Server.Impl do
 
   def submit_operation(datum_id, {op, vsn}, op_meta, retries) do
     txn_result =
-      @adapter.transact(fn ->
+      @adapter.transact(datum_id, fn ->
         case attempt_submit_operation(datum_id, {op, vsn}, op_meta) do
           {:ok, new_op} -> new_op
           {:error, err} -> @adapter.rollback(err)
