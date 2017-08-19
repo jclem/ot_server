@@ -1,7 +1,7 @@
 defmodule OT.Server.Mixfile do
   use Mix.Project
 
-  @version "0.2.2"
+  @version "0.3.0"
   @github_url "https://github.com/jclem/ot_server"
 
   def project do
