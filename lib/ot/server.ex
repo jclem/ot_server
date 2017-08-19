@@ -50,42 +50,44 @@ defmodule OT.Server do
 
   ## Example
 
+      iex> {:ok, pid} = OT.Server.start_link([])
       iex> :ets.insert(:ot_data,
       ...>   {"id", %{id: "id", content: "Hllo, ", type: "text", version: 0}})
-      iex> OT.Server.submit_operation("id", {[1, %{i: "e"}], 1})
-      iex> OT.Server.submit_operation("id", {[6, %{i: "world."}], 1})
+      iex> OT.Server.submit_operation(pid, "id", {[1, %{i: "e"}], 1})
+      iex> OT.Server.submit_operation(pid, "id", {[6, %{i: "world."}], 1})
       {:ok, {[7, %{i: "world."}], 2}}
-      iex> OT.Server.get_datum("id")
+      iex> OT.Server.get_datum(pid, "id")
       {:ok, %{id: "id", content: "Hello, world.", type: "text", version: 2}}
 
   If the operation succeeds, a tuple will be returned with the operation and
   its version. Otherwise, an error will be returned.
   """
-  @spec submit_operation(any, {OT.Operation.t, pos_integer}, any) ::
+  @spec submit_operation(pid, any, {OT.Operation.t, pos_integer}, any) ::
     {:ok, {OT.Operation.t, pos_integer}} | {:error, any}
-  def submit_operation(datum_id, {op, vsn}, meta \\ nil) do
-    call_with_worker({:submit_operation, datum_id, {op, vsn}, meta})
+  def submit_operation(pid, datum_id, {op, vsn}, meta \\ nil) do
+    GenServer.call(pid, {:submit_operation, datum_id, {op, vsn}, meta})
   end
 
   @doc """
   Get a datum.
 
-  This will call the configured adapter's `c:OT.Server.Adapter.get_datum/1` function and return
-  that value.
+  This will call the configured adapter's `c:OT.Server.Adapter.get_datum/1`
+  function and return that value.
 
   ## Example
 
+      iex> {:ok, pid} = OT.Server.start_link([])
       iex> :ets.insert(:ot_data, {"id", %{id: "id"}})
-      iex> OT.Server.get_datum("id")
+      iex> OT.Server.get_datum(pid, "id")
       {:ok, %{id: "id"}}
 
   If the datum is found, it will be returned. Otherwise, an error is returned.
   Also, note that this function does get called in a worker, so shares worker
   bandwidth with `submit_operation/3`.
   """
-  @spec get_datum(any) :: {:ok, any} | {:error, any}
-  def get_datum(id) do
-    call_with_worker({:get_datum, id})
+  @spec get_datum(pid, any) :: {:ok, any} | {:error, any}
+  def get_datum(pid, id) do
+    GenServer.call(pid, {:get_datum, id})
   end
 
   @impl true
@@ -93,11 +95,5 @@ defmodule OT.Server do
     [command | args] = Tuple.to_list(call_args)
     result = apply(OT.Server.Impl, command, args)
     {:reply, result, state}
-  end
-
-  defp call_with_worker(call_args) do
-    :poolboy.transaction(:ot_worker, fn ot_worker ->
-      GenServer.call(ot_worker, call_args)
-    end)
   end
 end
