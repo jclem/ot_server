@@ -30,8 +30,7 @@ for the `:ot_server` application:
 config :ot_server,
   adapter: MyOTAdapter,
   max_retries: 25,
-  ot_types: %{"text" => OT.Text},
-  pool_size: 5
+  ot_types: %{"text" => OT.Text}
 ```
 
 For an example of how an adapter can be created, see `OT.Server.ETSAdapter`.
@@ -44,5 +43,3 @@ For an example of how an adapter can be created, see `OT.Server.ETSAdapter`.
   fails permanently.
 - `ot_types`: A map with string keys pointing to modules that implement
   `OT.Type`.
-- `pool_size`: The number of workers to spawn. Each worker processes only a
-  single operation at a time, so set this accordingly.
