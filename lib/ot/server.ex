@@ -17,7 +17,10 @@ defmodule OT.Server do
   - `content`: The contents of the datum that `t:operation/0`s will be applied
     to.
   """
-  @type datum :: %{type: String.t, version: non_neg_integer, content: any}
+  @type datum :: %{required(:type) => String.t,
+    required(:version) => non_neg_integer,
+    required(:content) => any,
+    any => any}
 
   @typedoc """
   A piece of information that can uniquely identify a `t:datum/0`.
